@@ -1,0 +1,734 @@
+!Router 1 configs to establish EIGRP connection between 2 seperate hosts w/o the use of a switch.
+!Using a cross over cable for a 2611 series router for ethernet 0/0-1
+
+!!!!!!!!!!!!!
+!R1 configs!
+!!!!!!!!!!!!!
+en
+conf t
+no ip domain-lookup
+hostname R1
+service password-encryption
+enable secret class
+banner motd # Unauthorized access is strictly prohibited. #
+
+!configure the console connection for command.
+line con 0
+password cisco
+login
+logging synchronous
+exit
+
+!Assign the R1 to R2 interface network ip
+interface ethernet 0/0
+ip address 192.168.1.1 255.255.255.0
+no shutdown
+
+!Assign the gateway of the host connected to ethernet 0/1
+interface ethernet 0/1
+ip address 192.168.0.1 255.255.255.0
+no shutdown
+exit
+
+
+exit
+router eirgp 100
+network 192.168.0.0
+network 192.168.1.0
+
+!For the Host connected to R1 set the ip address to the 192.168.0.x network
+
+!!!!!!!!!!!!!
+!R2 configs!
+!!!!!!!!!!!!!
+en
+conf t
+no ip domain-lookup
+hostname R2
+service password-encryption
+enable secret class
+banner motd # Unauthorized access is strictly prohibited. #
+
+!configure the console connection for command.
+line con 0
+password cisco
+login
+logging synchronous
+exit
+
+!Assign the R2 to R1 interface network ip!
+interface ethernet 0/0
+ip address 192.168.1.2 255.255.255.0
+no shutdown
+
+!Assign the gateway of the host connected to ethernet 0/1
+
+interface ethernet 0/1
+ip address 192.168.2.1 255.255.255.0
+no shutdown
+exit
+
+router eigrp 100
+network 192.168.1.0
+network 192.168.2.0
+
+!for the Host connected to R2 set the ip address to the 192.168.2.x network
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Trouble shooting console output, made a subnet mask kistake a few times from bad commands, they have been fixed though.
+
+Cisco	2611	(MPC860)	processor	(revision	2.3)	with	62093K/3443K	bytes	of	memory.
+Processor	board	ID	JAD053616XL
+M860	processor:	part	number	0,	mask	49
+2	Ethernet	interfaces
+1	Serial	interface
+32K	bytes	of	NVRAM.
+16384K	bytes	of	processor	board	System	flash	(Read/Write)
+
+%	There	may	not	be	enough	space	available	to	collect	the	complete	crashinfo
+%	It	would	be	advisable	to	have	280755	bytes	free	space	on	flash:crashinfo
+
+
+Press	RETURN	to	get	started!
+
+
+
+
+
+
+
+
+
+
+
+
+*Mar	1	00:00:12.244:	SERVICE_MODULE(Serial0/0):	self	test	finished:	Passed
+*Mar	1	00:00:26.042:	%LINK-3-UPDOWN:	Interface	Ethernet0/0,	changed	state	to	up
+*Mar	1	00:00:26.046:	%LINK-3-UPDOWN:	Interface	Ethernet0/1,	changed	state	to	up
+*Mar	1	00:00:26.046:	%LINK-3-UPDOWN:	Interface	Serial0/0,	changed	state	to	down
+*Mar	1	00:00:27.148:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/0,	changed	state	to	up
+*Mar	1	00:00:27.148:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/1,	changed	state	to	up
+*Mar	1	00:00:27.152:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Serial0/0,	changed	state	to	down
+*Mar	1	00:00:28.911:	%SYS-5-CONFIG_I:	Configured	from	memory	by	console
+*Mar	7	13:30:45.893:	%LINK-5-CHANGED:	Interface	Serial0/0,	changed	state	to	administratively	down
+*Mar	7	13:30:47.704:	%SYS-5-RESTART:	System	restarted	--
+Cisco	IOS	Software,	C2600	Software	(C2600-ADVSECURITYK9-M),	Version	12.4(19b),	RELEASE	SOFTWARE	(fc1)
+Technical	Support:	http://www.cisco.com/techsupport
+Copyright	(c)	1986-2008	by	Cisco	Systems,	Inc.
+Compiled	Fri	13-Jun-08	02:48	by	prod_rel_team
+*Mar	7	13:30:47.708:	%SNMP-5-COLDSTART:	SNMP	agent	on	host	R1	is	undergoing	a	cold	start
+*Mar	7	13:30:48.710:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/1,	changed	state	to	down
+R1>en
+R1#erase	sta
+R1#erase	startup-config
+Erasing	the	nvram	filesystem	will	remove	all	configuration	files!	Continue?	[confirm]
+[OK]
+Erase	of	nvram:	complete
+R1#
+R1#
+*Mar	7	13:33:30.964:	%SYS-7-NV_BLOCK_INIT:	Initialized	the	geometry	of	nvramreload
+Proceed	with	reload?	[confirm]
+
+*Mar	7	13:33:34.978:	%SYS-5-RELOAD:	Reload	requested	by	console.	Reload	Reason:	Reload	Command.
+*Mar	6	16:52:54.132:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/0,	changed	state	to	down
+*Mar	6	16:52:55.133:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/0,	changed	state	to	up
+R2>en
+R2#erase	startup	config
+^
+%	Invalid	input	detected	at	'^'	marker.
+
+R2#erase	startup
+R2#erase	startup-config
+Erasing	the	nvram	filesystem	will	remove	all	configuration	files!	Continue?	[confirm]
+[OK]
+Erase	of	nvram:	complete
+R2#
+*Mar	6	16:53:19.541:	%SYS-7-NV_BLOCK_INIT:	Initialized	the	geometry	of	nvram
+R2#reload
+Proceed	with	reload?	[confirm]
+
+*Mar	6	16:53:37.463:	%SYS-5-RELOAD:	Reload	requested	by	console.	Reload	Reason:	Reload	Command.
+System	Bootstrap,	Version	11.3(2)XA4,	RELEASE	SOFTWARE	(fc1)
+Copyright	(c)	1999	by	cisco	Systems,	Inc.
+TAC:Home:SW:IOS:Specials	for	info
+C2600	platform	with	65536	Kbytes	of	main	memory
+
+program	load	complete,	entry	point:	0x80008000,	size:	0xfd6dd8
+Self	decompressing	the	image	:	######################################################################################	########
+Smart	Init	is	enabled
+smart	init	is	sizing	iomem
+ID	MEMORY_REQ	TYPE
+000092	0X000B3280	C2600	Dual	Ethernet
+0X00098670	public	buffer	pools
+0X00211000	public	particle	pools
+TOTAL:	0X0035C8F0
+
+If	any	of	the	above	Memory	Requirements	are
+"UNKNOWN",	you	may	be	using	an	unsupported
+configuration	or	there	is	a	software	problem	and
+system	operation	may	be	compromised.
+Rounded	IOMEM	up	to:	3Mb.
+Using	5	percent	iomem.	[3Mb/64Mb]
+
+Restricted	Rights	Legend
+
+Use,	duplication,	or	disclosure	by	the	Government	is
+subject	to	restrictions	as	set	forth	in	subparagraph
+(c)	of	the	Commercial	Computer	Software	-	Restricted
+Rights	clause	at	FAR	sec.	52.227-19	and	subparagraph
+(c)	(1)	(ii)	of	the	Rights	in	Technical	Data	and	Computer
+Software	clause	at	DFARS	sec.	252.227-7013.
+
+cisco	Systems,	Inc.
+170	West	Tasman	Drive
+San	Jose,	California	95134-1706
+
+
+
+Cisco	IOS	Software,	C2600	Software	(C2600-ADVSECURITYK9-M),	Version	12.4(19b),	RELEASE	SOFTWARE	(fc1)
+Technical	Support:	http://www.cisco.com/techsupport
+Copyright	(c)	1986-2008	by	Cisco	Systems,	Inc.
+Compiled	Fri	13-Jun-08	02:48	by	prod_rel_team
+
+
+This	product	contains	cryptographic	features	and	is	subject	to	United
+States	and	local	country	laws	governing	import,	export,	transfer	and
+use.	Delivery	of	Cisco	cryptographic	products	does	not	imply
+third-party	authority	to	import,	export,	distribute	or	use	encryption.
+Importers,	exporters,	distributors	and	users	are	responsible	for
+compliance	with	U.S.	and	local	country	laws.	By	using	this	product	you
+agree	to	comply	with	applicable	laws	and	regulations.	If	you	are	unable
+to	comply	with	U.S.	and	local	laws,	return	this	product	immediately.
+
+A	summary	of	U.S.	laws	governing	Cisco	cryptographic	products	may	be	found	at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If	you	require	further	assistance	please	contact	us	by	sending	email	to
+export@cisco.com.
+
+Cisco	2611	(MPC860)	processor	(revision	2.3)	with	62093K/3443K	bytes	of	memory.
+Processor	board	ID	JAD053616XL
+M860	processor:	part	number	0,	mask	49
+2	Ethernet	interfaces
+1	Serial	interface
+32K	bytes	of	NVRAM.
+16384K	bytes	of	processor	board	System	flash	(Read/Write)
+
+
+---	System	Configuration	Dialog	---
+
+Would	you	like	to	enter	the	initial	configuration	dialog?	[yes/no]:
+%	Please	answer	'yes'	or	'no'.
+Would	you	like	to	enter	the	initial	configuration	dialog?	[yes/no]:
+%	Please	answer	'yes'	or	'no'.
+Would	you	like	to	enter	the	initial	configuration	dialog?	[yes/no]:	no
+
+Would	you	like	to	terminate	autoinstall?	[yes]:	yes
+%	There	may	not	be	enough	space	available	to	collect	the	complete	crashinfo
+%	It	would	be	advisable	to	have	280755	bytes	free	space	on	flash:crashinfo
+
+
+Press	RETURN	to	get	started!
+
+
+*Mar	1	00:00:12.240:	SERVICE_MODULE(Serial0/0):	self	test	finished:	Passed
+*Mar	1	00:00:26.042:	%LINK-3-UPDOWN:	Interface	Ethernet0/0,	changed	state	to	up
+*Mar	1	00:00:26.042:	%LINK-3-UPDOWN:	Interface	Ethernet0/1,	changed	state	to	up
+*Mar	1	00:00:26.046:	%LINK-3-UPDOWN:	Interface	Serial0/0,	changed	state	to	down
+*Mar	1	00:00:27.044:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/0,	changed	state	to	up
+*Mar	1	00:00:27.044:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/1,	changed	state	to	down
+*Mar	1	00:00:27.048:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Serial0/0,	changed	state	to	down
+*Mar	1	00:01:19.125:	%LINK-5-CHANGED:	Interface	Serial0/0,	changed	state	to	administratively	down
+*Mar	1	00:01:19.137:	%LINK-5-CHANGED:	Interface	Ethernet0/0,	changed	state	to	administratively	down
+*Mar	1	00:01:19.149:	%LINK-5-CHANGED:	Interface	Ethernet0/1,	changed	state	to	administratively	down
+*Mar	1	00:01:20.139:	%LINEPROTO-5-UPDOWN:	Line	protocol
+Router>	on	Interface	Ethernet0/0,	changed	state	to	down
+*Mar	1	00:01:21.040:	%IP-5-WEBINST_KILL:	Terminating	DNS	process
+*Mar	7	13:33:36.812:	%SYS-5-RESTART:	System	restarted	--
+Cisco	IOS	Software,	C2600	Software	(C2600-ADVSECURITYK9-M),	Version	12.4(19b),	RELEASE	SOFTWARE	(fc1)
+Technical	Support:	http://www.cisco.com/techsupport
+Copyright	(c)	1986-2008	by	Cisco	Systems,	Inc.
+Compiled	Fri	13-Jun-08	02:48	by	prod_rel_team
+*Mar	7	13:33:36.816:	%SNMP-5-COLDSTART:	SNMP	agent	on	host	Router	is	undergoing	a	cold	start
+Router>en
+Router#conf	t
+Enter	configuration	commands,	one	per	line.	End	with	CNTL/Z.
+Router(config)#no	ip
+Router(config)#no	ip	do
+Router(config)#no	ip	domain-l
+Router(config)#no	ip	domain-loo
+Router(config)#no	ip	domain-lookup
+Router(config)#hostname	R1
+R1(config)#servi
+R1(config)#service	pa
+R1(config)#service	pass
+R1(config)#service	password-encryption
+R1(config)#enable	secret	class
+R1(config)#banner	motd	#	Don't	Touch	me	there,	this	is	my	no-no	square.	#
+R1(config)#line	con	0
+R1(config-line)#password	cisco
+R1(config-line)#login
+R1(config-line)#loggin
+R1(config-line)#logging	s
+R1(config-line)#logging	synchronous
+R1(config-line)#exit
+R1(config)#interfa
+R1(config)#interface	e
+R1(config)#interface	ethernet	0/0
+R1(config-if)#ip	addr
+R1(config-if)#ip	address	192.168.1.1	255.255.255.0
+R1(config-if)#no	shutdown
+R1(config-if)#inter
+*Mar	7	13:47:17.077:	%LINK-3-UPDOWN:	Interface	Ethernet0/0,	changed	state	to	up
+*Mar	7	13:47:18.078:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/0,	changed	state	to	up
+R1(config-if)#inter
+R1(config-if)#inter
+R1(config-if)#interf
+R1(config-if)#interface	?
+%	Unrecognized	command
+R1(config-if)#exit
+R1(config)#int
+R1(config)#interface	eth
+R1(config)#interface	ethernet	0/1
+R1(config-if)#ip	address	192.168.0.1	255.255.255.0
+R1(config-if)#no	shutdown
+R1(config-if)#
+*Mar	7	13:48:21.230:	%LINK-3-UPDOWN:	Interface	Ethernet0/1,	changed	state	to	up
+*Mar	7	13:48:22.232:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/1,	changed	state	to	up
+R1(config-if)#
+%	Please	answer	'yes'	or	'no'.
+Would	you	like	to	enter	the	initial	configuration	dialog?	[yes/no]:	no
+%	There	may	not	be	enough	space	available	to	collect	the	complete	crashinfo
+%	It	would	be	advisable	to	have	280755	bytes	free	space	on	flash:crashinfo
+
+
+Press	RETURN	to	get	started!
+
+
+*Mar	1	00:00:12.204:	SERVICE_MODULE(Serial0/1):	self	test	finished:	Passed
+*Mar	1	00:00:26.070:	%LINK-3-UPDOWN:	Interface	Ethernet0/0,	changed	state	to	up
+*Mar	1	00:00:26.074:	%LINK-3-UPDOWN:	Interface	Ethernet0/1,	changed	state	to	up
+*Mar	1	00:00:26.074:	%LINK-3-UPDOWN:	Interface	Serial0/0,	changed	state	to	down
+*Mar	1	00:00:26.078:	%LINK-3-UPDOWN:	Interface	Serial0/1,	changed	state	to	down
+*Mar	1	00:00:27.072:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/0,	changed	state	to	up
+*Mar	1	00:00:27.076:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/1,	changed	state	to	down
+*Mar	1	00:00:27.076:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Serial0/0,	changed	state	to	down
+*Mar	1	00:00:27.080:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Serial0/1,	changed	state	to	down
+*Mar	6	16:53:39.071:	%LINK-5-CHANGED:	Interface	Ethernet0/0,	changed	state	to	administratively	down
+*Mar	6	16:53:39.075:	%LINK-5-CHANGED:	Interface	Serial0/0,	changed	stat
+Router>e	to	administratively	down
+*Mar	6	16:53:39.075:	%LINK-5-CHANGED:	Interface	Ethernet0/1,	changed	state	to	administratively	down
+*Mar	6	16:53:39.075:	%LINK-5-CHANGED:	Interface	Serial0/1,	changed	state	to	administratively	down
+*Mar	6	16:53:39.776:	%SYS-5-RESTART:	System	restarted	--
+Cisco	IOS	Software,	C2600	Software	(C2600-ADVSECURITYK9-M),	Version	12.4(19b),	RELEASE	SOFTWARE	(fc1)
+Technical	Support:	http://www.cisco.com/techsupport
+Copyright	(c)	1986-2008	by	Cisco	Systems,	Inc.
+Compiled	Fri	13-Jun-08	02:48	by	prod_rel_team
+*Mar	6	16:53:39.780:	%SNMP-5-COLDSTART:	SNMP	agent	on	host	Router	is	undergoing	a	cold	start
+*Mar	6	16:53:40.073:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/0,	changed	state	to	down
+*Mar	6	16:53:40.954:	%IP-5-WEBINST_KILL:	Terminating	DNS	process
+Router>en
+Router#conf	t
+Enter	configuration	commands,	one	per	line.	End	with	CNTL/Z.
+Router(config)#no	ip	domain-lookup
+Router(config)#hostname	R2
+R2(config)#service	password-encryption
+R2(config)#enable	secret	class
+R2(config)#banner	motd	#	Unauthorized	access	is	strictly	prohibited.	#
+R2(config)#
+R2(config)#!configure	the	console	connection	for	command.
+R2(config)#line	con	0
+R2(config-line)#password	cisco
+R2(config-line)#login
+R2(config-line)#logging	synchronous
+R2(config-line)#exit
+R2(config)#
+R2(config)#!Assign	the	R2	to	R1	interface	network	ip
+R2(config)#interface	ethernet	0/0
+R2(config-if)#ip	address	192.168.1.2	255.255.225.0
+Bad	mask	0xFFFFE100	for	address	192.168.1.2
+R2(config-if)#no	shutdown
+R2(config-if)#
+R2(config-if)#!Assign	the	gateway	of	the	host	connected	to	ethernet	0/1
+R2(config-if)#
+R2(config-if)#interface	ethernet	0/0
+R2(config-if)#ip	address	192.168.2.1	255.255.225.0
+Bad	mask	0xFFFFE100	for	address	192.168.2.1
+R2(config-if)#no	shutdown
+*Mar	6	16:54:02.750:	%LINK-3-UPDOWN:	Interface	Ethernet0/0,	changed	state	to	up
+*Mar	6	16:54:03.751:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/0,	changed	state	to	up
+R2(config-if)#no	ip	addr
+R2(config-if)#no	ip	address
+R2(config-if)#interface	ethernet	0/0
+R2(config-if)#ip	add
+R2(config-if)#ip	address	192.168.1.2	255.255.255.0
+R2(config-if)#no	shut
+R2(config-if)#interface	ethernet	0/1
+R2(config-if)#ip	address	192.168.2.1	255.255.225.0
+Bad	mask	0xFFFFE100	for	address	192.168.2.1
+R2(config-if)#ip	address	192.168.2.1	255.255.255.0
+R2(config-if)#no	shut
+R2(config-if)#
+*Mar	6	16:57:07.088:	%LINK-3-UPDOWN:	Interface	Ethernet0/1,	changed	state	to	up
+R2(config-if)#
+
+R2(config-if)#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+R2(config-if)#exit
+R2(config)#router	eigrp	100
+R2(config-router)#network	192.168.2.0
+R2(config-router)#
+R1(config-if)#exit
+R1(config)#rou
+R1(config)#route	e
+%	Ambiguous	command:	"route	e"
+R1(config)#route	eir
+%	Ambiguous	command:	"route	eir"
+R1(config)#route	eie
+%	Ambiguous	command:	"route	eie"
+R1(config)#route	eig
+%	Ambiguous	command:	"route	eig"
+R1(config)#route	ei
+%	Ambiguous	command:	"route	ei"
+R1(config)#router
+R1(config)#router	e
+R1(config)#router	eigrp	100
+R1(config-router)#network	192.168.0.0
+R1(config-router)#network	192.168.1.0
+R1(config-router)#
+R2(config-router)#
+*Mar	6	17:01:13.780:	%LINEPROTO-5-UPDOWN:	Line	protocol	on	Interface	Ethernet0/1,	changed	state	to	up
+R2(config-router)#network	192.168.1.0
+R2(config-router)#
+*Mar	6	17:03:29.242:	%DUAL-5-NBRCHANGE:	IP-EIGRP(0)	100:	Neighbor	192.168.1.1	(Ethernet0/0)	is	up:	new	adjacency
+R2(config-router)#
+R2#
+*Mar	6	17:04:55.540:	%SYS-5-CONFIG_I:	Configured	from	console	by	console
+R2#
+R2#ping	192.168.0.1
+
+Type	escape	sequence	to	abort.
+Sending	5,	100-byte	ICMP	Echos	to	192.168.0.1,	timeout	is	2	seconds:
+!!!!!
+Success	rate	is	100	percent	(5/5),	round-trip	min/avg/max	=	4/4/4	ms
+R2#ping	192.168.0.2
+
+Type	escape	sequence	to	abort.
+Sending	5,	100-byte	ICMP	Echos	to	192.168.0.2,	timeout	is	2	seconds:
+.....
+Success	rate	is	0	percent	(0/5)
+R2#	Don't	Touch	me	there,	this	is	my	no-no	square.
+
+User	Access	Verification
+
+Password:
+Password:
+R1>en
+Password:
+R1#show	run	b
+Building	configuration...
+
+Current	configuration	:	883	bytes
+!
+version	12.4
+service	timestamps	debug	datetime	msec
+service	timestamps	log	datetime	msec
+service	password-encryption
+!
+hostname	R1
+!
+boot-start-marker
+boot-end-marker
+!
+enable	secret	5	$1$aR7D$LdeSFLsKZLcIosUF2jyu60
+!
+no	aaa	new-model
+ip	cef
+!
+!
+ip	auth-proxy	max-nodata-conns	3
+ip	admission	max-nodata-conns	3
+!
+!
+no	ip	domain	lookup
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface	Ethernet0/0
+ip	address	192.168.1.1	255.255.255.0
+half-duplex
+!
+interface	Serial0/0
+no	ip	address
+shutdown
+!
+interface	Ethernet0/1
+ip	address	192.168.0.1	255.255.255.0
+half-duplex
+!
+router	eigrp	100
+network	192.168.0.0
+network	192.168.1.0
+auto-summary
+!
+ip	forward-protocol	nd
+!
+ip	http	server
+no	ip	http	secure-server
+!
+!
+!
+control-plane
+!
+!
+!
+banner	motd	^C	Don't	Touch	me	there,	this	is	my	no-no	square.	^C
+!
+line	con	0
+password	7	094F471A1A0A
+logging	synchronous
+login
+line	aux	0
+line	vty	0	4
+!
+!
+end
+
+R1#
+R2#show	run	b
+Building	configuration...
+
+Current	configuration	:	942	bytes
+!
+version	12.4
+service	timestamps	debug	datetime	msec
+service	timestamps	log	datetime	msec
+service	password-encryption
+!
+hostname	R2
+!
+boot-start-marker
+boot-end-marker
+!
+enable	secret	5	$1$6Zsc$ECuFN8O4PBR3rPmzyI3dl1
+!
+no	aaa	new-model
+ip	cef
+!
+!
+ip	auth-proxy	max-nodata-conns	3
+ip	admission	max-nodata-conns	3
+!
+!
+no	ip	domain	lookup
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface	Ethernet0/0
+ip	address	192.168.1.2	255.255.255.0
+half-duplex
+!
+interface	Serial0/0
+no	ip	address
+shutdown
+no	fair-queue
+!
+interface	Ethernet0/1
+ip	address	192.168.2.1	255.255.255.0
+half-duplex
+!
+interface	Serial0/1
+no	ip	address
+shutdown
+!
+router	eigrp	100
+network	192.168.1.0
+network	192.168.2.0
+auto-summary
+!
+ip	forward-protocol	nd
+!
+ip	http	server
+no	ip	http	secure-server
+!
+!
+!
+control-plane
+!
+!
+!
+banner	motd	^C	Unauthorized	access	is	strictly	prohibited.	^C
+!
+line	con	0
+password	7	02050D480809
+logging	synchronous
+login
+line	aux	0
+line	vty	0	4
+!
+!
+end
+
+R2#exit
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+R2	con0	is	now	available
+
+
+
+
+
+Press	RETURN	to	get	started.
+
+
+
+
+
+Unauthorized	access	is	strictly	prohibited.
+
+User	Access	Verification
+
+Password:
+Password:
+R2>en
+Password:
+Password:
+R2#ping	192.168.2.2
+
+Type	escape	sequence	to	abort.
+Sending	5,	100-byte	ICMP	Echos	to	192.168.2.2,	timeout	is	2	seconds:
+!!!!!
+Success	rate	is	100	percent	(5/5),	round-trip	min/avg/max	=	1/2/4	ms
+R2#ping	192.168.2.1
+
+Type	escape	sequence	to	abort.
+Sending	5,	100-byte	ICMP	Echos	to	192.168.2.1,	timeout	is	2	seconds:
+!!!!!
+Success	rate	is	100	percent	(5/5),	round-trip	min/avg/max	=	1/2/4	ms
+R2#ping	192.168.1.2
+
+Type	escape	sequence	to	abort.
+Sending	5,	100-byte	ICMP	Echos	to	192.168.1.2,	timeout	is	2	seconds:
+!!!!!
+Success	rate	is	100	percent	(5/5),	round-trip	min/avg/max	=	1/2/4	ms
+R2#ping	192.168.1.1
+
+Type	escape	sequence	to	abort.
+Sending	5,	100-byte	ICMP	Echos	to	192.168.1.1,	timeout	is	2	seconds:
+!!!!!
+Success	rate	is	100	percent	(5/5),	round-trip	min/avg/max	=	1/2/4	ms
+R2#ping	192.168.0.1
+
+Type	escape	sequence	to	abort.
+Sending	5,	100-byte	ICMP	Echos	to	192.168.0.1,	timeout	is	2	seconds:
+!!!!!
+Success	rate	is	100	percent	(5/5),	round-trip	min/avg/max	=	1/1/4	ms
+R2#ping	192.168.0.2
+
+Type	escape	sequence	to	abort.
+Sending	5,	100-byte	ICMP	Echos	to	192.168.0.2,	timeout	is	2	seconds:
+.....
+Success	rate	is	0	percent	(0/5)
+R2#ping	192.168.0.2
+
+Type	escape	sequence	to	abort.
+Sending	5,	100-byte	ICMP	Echos	to	192.168.0.2,	timeout	is	2	seconds:
+!!!!!
+Success	rate	is	100	percent	(5/5),	round-trip	min/avg/max	=	1/2/4	ms
+R2#
+R2#copy	run	s
+R2#copy	ru
+R2#copy	running-config
+%	Incomplete	command.
+
+R2#copy	run	start
+Destination	filename	[startup-config]?
+Building	configuration...
+
+R1#copy	run	start
+Destination	filename	[startup-config]?
+Building	configuration...
+[OK]
+R1#
