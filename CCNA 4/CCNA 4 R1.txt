@@ -1,0 +1,129 @@
+CCNA 4 Skills Asmt.
+
+
+Router 1
+
+#STEP 1.2 CONF R1#
+!
+enable
+conf t
+no ip domain-lookup
+hostname R1
+enable secret class
+line console 0
+password cisco
+login
+ip domain-name West.com
+username user password cisco
+crypto key generate rsa modulus 2048 
+!
+line vty 0 4 
+login local 
+transport input ssh
+exit
+service password-encryption
+banner motd $Unauthorized Access is Prohibited!$
+!
+Interface G0/0/1
+description Connection to West LAN
+ip address 192.168.1.1 255.255.255.0
+ipv6 address 2001:db8:acad:1::1/64
+ipv6 address fe80::1 link-local
+no shutdown
+!
+#STEP 2.1 Config R1#
+en
+conf t
+interface s0/1/0
+description Connection to R2
+ip address 209.165.200.225 255.255.255.252
+ipv6 address 2001:db8:acad:a::1/64
+ipv6 address fe80::1 link-local
+encapsulation ppp
+clock rate 64000
+no shutdown
+!
+ppp authentication chap
+exit
+!
+username R2 password cisco
+!
+int loopback 1
+ip address 209.165.201.1 255.255.255.252
+ipv6 address 2001:db8:acad:2::1/64
+ipv6 address fe80::1 link-local
+no shutdown
+exit
+ip http server
+username web privilege 15 password cisco
+!
+#STEP 3.1 Config R1#
+!
+ip nat inside source list 1 interface s0/1/0 overload
+!
+interface g0/0/1
+ip nat inside 
+!
+interface s0/1/0
+ip nat outside
+exit
+!
+access-list 1 permit 192.168.1.0 0.0.0.255
+########there needs to be somthing here about a deny any############
+!
+#STEP 4.1 ip route R1#
+!
+ip route 0.0.0.0 0.0.0.0 s0/1/0
+ipv6 unicast-routing
+ipv6 router eigrp 1
+eigrp router-id 1.1.1.1
+exit
+!
+interface s0/1/0
+ipv6 eigrp 1
+!
+interface loopback1
+ipv6 eigrp 1
+!
+interface g0/0/1
+ipv6 eigrp 1
+exit
+!
+#STEP 5.1 GRE/BGP on R1#
+!
+enable
+config t
+interface tunnel 0
+tunnel mode gre ip
+ip address 172.16.1.1 255.255.255.252
+tunnel source serial 0/1/0 
+tunnel destination 209.165.200.229
+no shutdown
+exit
+!
+ip route 209.165.200.229 255.255.255.255 s0/1/0 
+!
+router bgp 65010
+neighbor 172.16.1.2 remote-as 65030
+network 209.165.201.0 mask 255.255.255.252  
+network 192.168.1.0 mask 255.255.255.0      
+exit
+!
+#Step 7.1 Configure ACL R1#
+!
+ip access-list extended ICMP_ACCESS
+deny icmp any any echo
+permit ip deny any
+exit
+int g0/1
+ip access-group ICMP_ACCESS out 
+!
+#Step 1 Config snmpv3 on R1#
+!
+ip access-list standard SNMP-ACCESS
+permit 192.168.1.0 0.0.0.255
+exit
+snmp-server view SNMP-RO iso included 
+snmp-server group SNMP v3 pri read SNMP-RO access SNMP-ACCESS
+snmp-server user JOE SNMP v3 auth sha cisco12345 pri aes 128 cisco54321
+!

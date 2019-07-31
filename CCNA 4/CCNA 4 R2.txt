@@ -1,0 +1,76 @@
+CCNA 4 Skills Asmt.
+
+Theodore Sumrall
+
+Router 2
+
+#STEP 1.3 CONF R2#
+!
+enable
+config t
+no ip domain-lookup
+hostname R2
+!
+!
+enable secret class
+line con 0
+password cisco
+login
+logging synchronous
+exit
+!
+banner MOTD #Unauthorized Access is Prohibited!#
+!
+#STEP 2.2 Config R2#
+!
+interface s0/1/0
+description Connection to R1
+ip address 209.165.200.226 255.255.255.252
+ipv6 address 2001:db8:acad:a::2/64
+ipv6 address fe80::2 link-local
+encapsulation ppp
+no shutdown
+!
+ppp authentication chap
+exit
+!
+username R1 password cisco
+!
+interface s0/1/1
+description Connection to R3
+ip address 209.165.200.230 255.255.255.252
+ipv6 address 2001:db8:acad:b::2/64
+ipv6 address fe80::2 link-local
+clock rate 64000
+no shutdown
+!
+#STEP 4.2 ip route R2#
+!
+ipv6 unicast-routing
+ipv6 router eigrp 1
+eigrp router-id 2.2.2.2
+exit
+!
+interface s0/1/0
+ipv6 eigrp 1
+!
+interface s0/1/1
+ipv6 eigrp 1
+!
+#STEP 6.1 Implement PPPoE for R2#
+!
+username Cust1 password ciscopppoe
+ip local pool PPPoEPOOL 10.0.0.1 10.0.0.10
+interface virtual-Template 1
+ip address 10.0.0.254 255.255.255.0
+mtu 1492
+peer default ip address pool PPPoEPOOL
+ppp authentication chap callin
+exit
+bba-group pppoe gloabl
+virtual-Template 1
+exit
+interface g0/0/0
+pppoe enable group global
+no shutdown
+!

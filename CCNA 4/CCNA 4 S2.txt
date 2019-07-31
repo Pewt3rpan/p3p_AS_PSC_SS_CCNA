@@ -1,0 +1,26 @@
+CCNA 4 Skills Asmt.
+
+
+Switch 2
+
+#Step 8.2 Config SPAN on S2#
+!
+enable
+config t
+interface fastEthernet 0/3
+no shutdown
+exit
+monitor session 1 source interface fastEthernet 0/3 
+!
+interface fastEthernet 0/18
+no shutdown
+exit
+!
+monitor session 1 destination interface fastEthernet 0/18
+!
+interface fastEthernet 0/11
+no shutdown
+!
+interface fastEthernet 0/4
+no shutdown
+exit
