@@ -1,0 +1,42 @@
+!!!!!!S1!!!!!!
+######Part 2######
+enable
+config t
+hostname S1
+enable secret class
+no ip domain-lookup
+line con 0
+password cisco
+login
+logging synchronous
+line vty 0 4
+password cisco
+login
+service password-encryption
+exit
+int vlan 1
+ip address 172.27.0.11 255.255.255.0
+no shut
+exit
+ip default-gateway 172.27.0.2
+exit
+interface range f0/1-4
+switchport mode trunk
+switchport trunk native vlan 1
+interface range f0/7-24
+switchport mode access
+switchport nonegotiate
+shutdown
+exit
+######Part 3######
+!!!!!!Configure LAN Redundancy and Link Aggregation!!!!!!
+******Configure Spanning Tree******
+spanning-tree mode rapid-pvst
+spanning-tree vlan 1 root primary
+int f0/6
+spanning-tree portfast
+spanning-tree bpduguard enable
+******Configure an LACP Etherchannel between S1 and S3******
+int range f0/3-4
+channel-group 1 mode active
+

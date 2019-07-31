@@ -1,0 +1,54 @@
+!!!!!!R1!!!!!!
+######Part 2######
+enable
+config t
+hostname R1
+enable secret class
+no ip domain-lookup
+line con 0
+password cisco
+login
+logging synchronous
+line vty 0 4
+password cisco
+login
+service password-encryption
+exit
+int g0/1
+description Connection to S1
+ip address 172.27.0.1 255.255.255.0
+no shut
+int s0/0/1
+description Connection to R2
+ip address 172.27.123.1 255.255.255.252
+clock rate 64000
+no shut
+int lo1
+description Connection to Area 1
+ip address 172.27.1.1 255.255.255.0
+no shut
+end
+######Part 3######
+*******Configure HSRP on R1******
+int g0/1
+standby 1 ip 172.27.0.2
+standby 1 priority 150
+standby 1 prempt
+######Part 4######
+!!!!!!Configure OSPFv2 Dynamic Routing Protocol!!!!!!
+******Configure OSPFv2 on R1******
+router ospf 1
+router-id 1.1.1.1
+network 172.27.0.0 0.0.0.255 area 0
+network 172.27.1.0 0.0.0.255 area 1
+network 172.27.123.0 0.0.0.3 area 0
+passive-interface g0/1
+passive-interface lo/1
+auto-cost reference-bandwidth 1000
+int s0/0/0
+bandwidth 64
+ip ospf cost 7500
+int s0/0/1
+bandwidth 64
+exit
+
