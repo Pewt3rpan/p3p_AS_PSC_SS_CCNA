@@ -1,0 +1,93 @@
+Theodore Sumrall CCNA 3 R3
+
+#######################
+******   R3     *******
+#######################
+
+PART 1: Initialize Devices
+
+erase startup-config
+reload
+
+######################################
+PART 2: Configure Device Basic Settings
+
+#STEP 1: Configure R3#
+
+enable
+config t
+no ip domain-lookup
+hostname R3
+enable secret class
+line con 0
+ logging synchronous
+ password cisco
+ login
+line vty 0
+ password cisco
+ login
+service password-encryption
+banner motd @Unauthorized Access Is Prohibited!@
+exit
+
+conf t
+interface g0/1
+Description S3 link to 172.27.0.0 network
+ip address 172.27.0.3 255.255.255.0
+no shutdown
+
+interface s0/0/1
+Description R2 link to 172.27.123.0 network
+ip address 172.27.123.6 255.255.255.252
+clock rate 64000
+bandwidth 64
+no shutdown
+
+interface lo4
+Description Redundant loopback for 172.27.4.0 network
+ip address 172.27.4.1 255.255.255.0
+no shutdown
+exit
+
+#####################################################
+PART 3: Configure LAN Redundancy and Link Aggregation
+
+#STEP 5: Configure HSRP on R3#
+
+config t
+interface g0/1
+standby version 2
+standby 1 ip 172.27.0.2
+exit
+
+#########################################################
+Part 4: Configure OSPFv2 for Dynamic Routing Protocol
+
+#STEP 3: Configure OSPFv2 on R3#
+
+config t
+router ospf 1
+router-id 3.3.3.3
+network 172.27.0.0 0.0.0.255 area 0
+network 172.27.123.0 0.0.0.3 area 0
+network 172.27.123.4 0.0.0.3 area 0
+network 172.27.4.0 0.0.0.255 area 3
+passive-interface g0/1
+!do I nedd passive-interface for the lo address its it lan?
+auto-cost reference-bandwidth 1000
+exit
+
+#STEP 4: Verify Network Connectivity#
+
+show ip OSPF neighbors
+show ip OSPF interfaces
+show ip protocols
+show ip OSPF topology
+show ip OSPF route
+
+##############################################
+Part 5: Verify connectivity and HSRP config
+
+Insert ping commands here...
+
+ping x.x.x.x

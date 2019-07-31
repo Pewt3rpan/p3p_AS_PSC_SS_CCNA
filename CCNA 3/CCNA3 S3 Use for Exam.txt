@@ -1,0 +1,111 @@
+Theodore Sumrall CCNA 3 S3
+
+#######################
+******   S3     *******
+#######################
+
+STEP 1: Initialize and reload the routers and switches
+######################################################
+
+erase startup-config
+delete vlan.dat
+reload
+
+PART 2: Configure Device Basic Settings
+
+#STEP 4: Configure S3#
+
+config t
+no ip domain-lookup
+hostname S3
+enable secret class
+line con 0
+ logging synchronous
+ password cisco
+ login
+line vty 0
+ password cisco
+ login
+service password-encryption
+banner motd @Unauthorized Access Is Prohibited!@
+exit
+
+interface VLAN 1
+ip address 172.27.0.13 255.255.255.0
+no shutdown
+exit
+
+
+ip default-gateway 172.27.0.2
+exit
+
+interface range f0/1-2
+switchport mode trunk
+switchport trunk native vlan 1
+no shutdown
+exit
+
+interface range f0/3-4
+switchport mode trunk
+switchport trunk native vlan 1
+no shutdown
+exit
+
+interface f0/5
+switchport mode access
+switchport access vlan 1
+no shutdown
+exit
+
+interface f0/18
+switchport mode access
+switchport access vlan 1
+no shutdown
+exit
+
+interface range f0/7-24
+switchport mode access
+shutdown
+exit
+
+################################################
+PART 3: Configure LAN Redundancy and Link Aggregation
+
+#STEP 3: Configure Spanning tree on S3#
+
+
+config t
+spanning-tree mode rapid-pvst
+spanning-tree vlan 1 root primary
+exit
+
+
+config t
+interface f0/18 
+spanning-tree portfast
+spanning-tree bpduguard enable
+exit
+
+#STEP 6: Configure an LACP Etherchannel between S1 and S3#
+
+config t
+interface range f0/3-4
+channel-group 1 mode passive
+exit
+
+####################################
+PART 4: Verify Network Connectivity
+
+show ip OSPF neighbors
+show ip OSPF interfaces
+show ip protocols
+show ip OSPF topology
+show ip OSPF route
+
+##############################################
+Part 5: Verify connectivity and HSRP config
+
+Insert ping commands here...
+
+ping x.x.x.x
+

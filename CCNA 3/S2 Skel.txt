@@ -1,0 +1,56 @@
+!########################
+!	Joshua Herrmann
+!########################
+!	S2 - Config
+!########################
+!	Part 2 
+!
+en
+conf t
+no ip domain-lookup
+hostname S2
+enable secret class
+
+line con 0
+ password cisco
+ login
+ logging synchronous
+ exit
+
+line vty 0 4
+ password cisco
+ login
+ exit
+
+service password-encryption
+banner motd "
+Unauthorized Access is Prohibited!"
+
+interface vlan 1
+ ip address 172.27.0.12 255.255.255.0
+ exit
+ip default-gateway 172.27.0.2
+
+interface range f0/1 - 2
+ switchport mode trunk
+
+interface range f0/3 - 4
+ switchport mode trunk
+
+interface range f0/5 - 24
+ switchport mode access
+ shut
+ exit
+
+!######################
+!	Part 3
+!######################
+
+spanning-tree mode rapid-pvst
+
+interface f0/18
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+ exit
+
+
